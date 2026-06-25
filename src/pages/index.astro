@@ -3,6 +3,7 @@ import { client } from "../lib/contentful";
 import Layout from "../layouts/Layout.astro";
 
 const books = await client.getAllBooks();
+console.log("books " + books.length);
 ---
 
 <Layout title="Astrobrary">
