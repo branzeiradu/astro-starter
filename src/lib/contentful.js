@@ -18,21 +18,19 @@ async function getAllBooks() {
 
   const query = `
     {
-        bookReferencePageCollection {
-          items {
-            sys {
-                id
-            }
-            title
-            author {
-              name
-            }
-            cover {
-              url
-            }
+      bookReferencePageCollection {
+        items {
+          sys {
+            id
+          }
+          title
+          cover {
+            url
           }
         }
-      }`;
+      }
+    }
+  `;
   const response = await apiCall(query);
   const json = await response.json()
   console.log(JSON.stringify(json, null, 2));
@@ -97,4 +95,23 @@ async function getAuthor(id) {
   return await json.data.bookAuthor
 }
 
-export const client = { getAllBooks, getSingleBook, getAuthor }
+async function getAllAuthors() {
+  const query = `
+    {
+      bookAuthorCollection {
+        items {
+          sys {
+            id
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await apiCall(query);
+  const json = await response.json();
+
+  return json.data.bookAuthorCollection.items;
+}
+
+export const client = { getAllBooks, getSingleBook, getAuthor, getAllAuthors }

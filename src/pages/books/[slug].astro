@@ -4,14 +4,23 @@ import Layout from "../../layouts/Layout.astro";
 import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
 import Header from "../../components/Header.astro";
 
-const { slug } = Astro.params;
-let book;
 
-try {
-  book = await client.getSingleBook(slug);
-} catch (error) {
-  return Astro.redirect("/404");
+export async function getStaticPaths() {
+  const books = await client.getAllBooks();
+
+  return Promise.all(
+    books.map(async (book) => ({
+      params: {
+        slug: book.sys.id,
+      },
+      props: {
+        book: await client.getSingleBook(book.sys.id),
+      },
+    }))
+  );
 }
+
+const { book } = Astro.props;
 ---
 
 <Layout title={book.title}>
@@ -21,7 +30,7 @@ try {
       {book.title}
     </h1>
     <h2>
-      written by <a href=`/author/${book.author.sys.id}`>{book.author.name}</a>
+      written by <a href={`/author/${book.author.sys.id}`}> {book.author.name} </a>
     </h2>
     <div
       class="grid grid-cols-1 gap-x-6 gap-y-10 lg:grid-cols-2 xl:gap-x-8 pt-8"

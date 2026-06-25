@@ -4,14 +4,22 @@ import Layout from "../../layouts/Layout.astro";
 import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
 import Header from "../../components/Header.astro";
 
-const { slug } = Astro.params;
-let author;
+export async function getStaticPaths() {
+    const authors = await client.getAllAuthors();
 
-try {
-    author = await client.getAuthor(slug);
-} catch (error) {
-    return Astro.redirect("/404");
+    return Promise.all(
+        authors.map(async (author) => ({
+            params: {
+                slug: author.sys.id,
+            },
+            props: {
+                author: await client.getAuthor(author.sys.id),
+            },
+        })),
+    );
 }
+
+const { author } = Astro.props;
 ---
 
 <Layout title={author.name}>
