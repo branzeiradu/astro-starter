@@ -1,13 +1,18 @@
 const SPACE = import.meta.env.CONTENTFUL_SPACE_ID
-const TOKEN = import.meta.env.CONTENTFUL_ACCESS_TOKEN
+const DELIVERY_TOKEN = import.meta.env.CONTENTFUL_ACCESS_TOKEN
+const PREVIEW_TOKEN = import.meta.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
 
-async function apiCall(query, variables) {
+async function apiCall(query, variables, preview = false) {
   const fetchUrl = `https://graphql.contentful.com/content/v1/spaces/${SPACE}/environments/master`;
+  const token = preview
+    ? PREVIEW_TOKEN
+    : DELIVERY_TOKEN;
+
   const options = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${TOKEN}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ query, variables }),
   }
@@ -37,38 +42,49 @@ async function getAllBooks() {
   return await json.data.bookReferencePageCollection.items;
 }
 
-async function getSingleBook(id) {
+async function getSingleBook(id, preview = false) {
   const query = `
-    query ($id: String!) {
-        bookReferencePage(id: $id) {
-          title
-          cover {
-            url
+    query ($id: String!, $preview: Boolean!) {
+      bookReferencePage(
+        id: $id,
+        preview: $preview
+      ) {
+        title
+        cover {
+          url
+        }
+        description {
+          json
+        }
+        author {
+          sys {
+            id
           }
-          description {
-            json
-          }
-          author {
-            sys {
-              id
-            }
-            name
-          }
+          name
         }
       }
-    `;
+    }
+  `;
+
   const variables = {
-    id: id
+    id: id,
+    preview: preview
   };
-  const response = await apiCall(query, variables);
+
+  const response = await apiCall(query, variables, preview);
   const json = await response.json();
-  return await json.data.bookReferencePage
+  console.log("BOOK RESPONSE");
+  console.log(JSON.stringify(json, null, 2));
+  return json.data?.bookReferencePage;
 }
 
-async function getAuthor(id) {
+async function getAuthor(id, preview = false) {
   const query = `
-    query ($id: String!) {
-      bookAuthor(id:$id) {
+    query ($id: String!, $preview: Boolean!) {
+      bookAuthor(
+        id: $id,
+        preview: $preview
+      ) {
         name
         avatar {
           url
@@ -86,13 +102,20 @@ async function getAuthor(id) {
         }
       }
     }
-    `;
+  `;
+
   const variables = {
-    id: id
+    id: id,
+    preview: preview
   };
-  const response = await apiCall(query, variables);
+
+  const response = await apiCall(query, variables, preview);
   const json = await response.json();
-  return await json.data.bookAuthor
+
+  console.log("AUTHOR RESPONSE");
+  console.log(JSON.stringify(json, null, 2));
+
+  return json.data.bookAuthor;
 }
 
 async function getAllAuthors() {
@@ -110,6 +133,7 @@ async function getAllAuthors() {
 
   const response = await apiCall(query);
   const json = await response.json();
+  console.log(JSON.stringify(json, null, 2));
 
   return json.data.bookAuthorCollection.items;
 }

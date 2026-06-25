@@ -1,0 +1,18 @@
+---
+import BookPage from "../../../components/BookPage.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { client } from "../../../lib/contentful";
+export const prerender = false; //Do not generate this page at build time. Run it through the Cloudflare Worker.
+
+const { slug } = Astro.params;
+
+const book = await client.getSingleBook(slug, true);
+console.log("preview book: " + JSON.stringify(book));
+
+if (!book) {
+  return Astro.redirect("/404");
+}
+---
+
+ <BookPage book={book} />
+
