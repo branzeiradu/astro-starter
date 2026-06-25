@@ -1,5 +1,5 @@
 const SPACE = import.meta.env.CONTENTFUL_SPACE_ID
-const TOKEN = import.meta.env.CONTENTFUL_DELIVERY_TOKEN
+const TOKEN = import.meta.env.CONTENTFUL_ACCESS_TOKEN
 
 async function apiCall(query, variables) {
   const fetchUrl = `https://graphql.contentful.com/content/v1/spaces/${SPACE}/environments/master`;
@@ -27,7 +27,7 @@ async function getAllBooks() {
             author {
               name
             }
-            coverImage {
+            cover {
               url
             }
           }
@@ -35,6 +35,7 @@ async function getAllBooks() {
       }`;
   const response = await apiCall(query);
   const json = await response.json()
+  console.log(JSON.stringify(json, null, 2));
   return await json.data.bookReferencePageCollection.items;
 }
 
@@ -43,7 +44,7 @@ async function getSingleBook(id) {
     query ($id: String!) {
         bookReferencePage(id: $id) {
           title
-          coverImage {
+          cover {
             url
           }
           description {
