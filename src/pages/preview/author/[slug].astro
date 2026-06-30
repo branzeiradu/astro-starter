@@ -1,0 +1,22 @@
+---
+import Layout from "./../../../layouts/Layout.astro";
+import Header from "./../../../components/Header.astro";
+import Author from "./../../../components/AuthorPage.astro";
+import { client } from "../../../lib/contentful";
+export const prerender = false; //Do not generate this page at build time. Run it through the Cloudflare Worker.
+
+const { slug } = Astro.params;
+
+const author = await client.getAuthor(slug, true);
+console.log("preview author: " + JSON.stringify(author));
+
+if (!author) {
+  return Astro.redirect("/404");
+}
+---
+
+<Layout title={author.name}>
+    <Header />
+    <Author author={author} />
+</Layout>
+
