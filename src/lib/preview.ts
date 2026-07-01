@@ -3,7 +3,7 @@ import BookPage from "../components/BookPage.astro";
 import AuthorPage from "../components/AuthorPage.astro";
 
 const previewResolvers = {
-    bookPageReference: {
+    bookReferencePage: {
         fetch: client.getSingleBook,
         component: BookPage,
         props: (data) => ({
