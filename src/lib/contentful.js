@@ -15,7 +15,7 @@ async function apiCall(query, variables, preview = false) {
     console.log("fetchUrl " + fetchUrl);
 
     const jsonPayload = JSON.stringify({ query, variables }, null, 2);
-    console.log("jsonPayload " + jsonPayload);
+    //console.log("jsonPayload " + jsonPayload);
 
     const options = {
       method: 'POST',
@@ -61,7 +61,7 @@ async function getAllBooks(preview = false) {
   `;
   const response = await apiCall(query, {}, preview);
   const json = await response.json()
-  console.log(JSON.stringify(json, null, 2));
+  //console.log(JSON.stringify(json, null, 2));
   return await json.data.bookReferencePageCollection.items;
 }
 
@@ -96,8 +96,8 @@ async function getSingleBook(id, preview = false) {
 
   const response = await apiCall(query, variables, preview);
   const json = await response.json();
-  console.log("BOOK RESPONSE");
-  console.log(JSON.stringify(json, null, 2));
+  //console.log("BOOK RESPONSE");
+  //console.log(JSON.stringify(json, null, 2));
   return json.data?.bookReferencePage;
 }
 
@@ -132,8 +132,8 @@ async function getAuthor(id, preview = false) {
   const response = await apiCall(query, variables, preview);
   const json = await response.json();
 
-  console.log("AUTHOR RESPONSE");
-  console.log(JSON.stringify(json, null, 2));
+  //console.log("AUTHOR RESPONSE");
+  //console.log(JSON.stringify(json, null, 2));
 
   return json.data.bookAuthor;
 }
@@ -153,7 +153,7 @@ async function getAllAuthors(preview = false) {
 
   const response = await apiCall(query, {}, preview);
   const json = await response.json();
-  console.log(JSON.stringify(json, null, 2));
+  //console.log(JSON.stringify(json, null, 2));
 
   return json.data.bookAuthorCollection.items;
 }
@@ -218,7 +218,7 @@ async function getLandingPage(preview = false) {
     };
 
     const response = await apiCall(query, variables, preview);
-    if (!response || !response.ok) {  // ← Add the !response check
+    if (!response || !response.ok) {
       console.error("getLandingPage err:", response);
       return null;
     }
@@ -229,6 +229,8 @@ async function getLandingPage(preview = false) {
       console.error("GraphQL Errors:", json.errors);
       return null;
     }
+
+    //console.log("Contentful landing page response\n: " + JSON.stringify(json, null, 2));
 
     return json.data.landingPageCollection?.items[0] ?? {};
   } catch (err) {

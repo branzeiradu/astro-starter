@@ -1,23 +1,23 @@
 ---
-import type {
-    ProjectsNewsBlogPost,
-    FeaturedProjectsCollection,
-} from "../types/contentful.d.ts";
+import type { ProjectsNewsBlogPost } from "../types/contentful.d.ts";
 
 const { projects } = Astro.props;
-console.log("FEATURED PROJECTS " + JSON.stringify(projects?.items))
-const projectItems = projects?.items.concat(projects?.items) || [];
+//console.log("FEATURED PROJECTS " + JSON.stringify(projects));
+const projectItems = projects?.items || [];
 ---
 
-<div data-carousel-container class="w-full max-w-[1432px] mx-auto py-8 flex flex-col select-none px-4">
-  
+<div
+  data-carousel-container
+  class="w-full max-w-[1432px] mx-auto py-8 flex flex-col select-none px-4"
+>
   <div class="w-full h-16 flex items-center justify-start mb-6">
-    <h2 class="text-xl font-bold tracking-wide text-white">Featured Projects</h2>
+    <h2 class="text-xl font-bold tracking-wide text-white">
+      Featured Projects
+    </h2>
   </div>
 
   <div class="w-full overflow-hidden relative">
-    
-    <div 
+    <div
       data-carousel-track
       class="w-full overflow-x-auto scrollbar-hide block"
     >
@@ -30,34 +30,38 @@ const projectItems = projects?.items.concat(projects?.items) || [];
             >
               <div class="w-full h-44 bg-slate-950 rounded-md overflow-hidden flex items-center justify-center p-4 relative">
                 <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 group-hover:scale-105 transition-transform duration-300"></div>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-12 h-12 text-slate-700 relative z-10">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-                </svg>
+                {
+                  <img
+                    src={`https://picsum.photos/500/350?random=${Math.random()}`}
+                    alt={project.postTitle || "Project Thumbnail"}
+                    class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 relative z-0"
+                  />
+                }
               </div>
 
               {project.dateDisplayed && (
                 <span class="text-xs font-semibold text-indigo-400 tracking-wider uppercase">
-                  {new Date(project.dateDisplayed).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(project.dateDisplayed).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </span>
               )}
 
               <h3 class="text-lg font-bold text-white tracking-wide line-clamp-1">
-                {project.postTitle || 'Untitled Project'}
+                {project.postTitle || "Untitled Project"}
               </h3>
 
               <p class="text-sm text-gray-400 line-clamp-3 leading-relaxed text-left">
-                {project.postIntroduction || 'No project introduction overview available.'}
+                {project.postIntroduction ||
+                  "No project introduction overview available."}
               </p>
-            </div> 
+            </div>
           ))
         }
       </div>
     </div>
-    
   </div>
 
   <div class="w-full flex justify-end items-center mt-6 px-2 gap-3">
@@ -66,8 +70,18 @@ const projectItems = projects?.items.concat(projects?.items) || [];
       class="w-12 h-12 rounded-full border border-slate-800 bg-slate-900/60 flex items-center justify-center text-gray-400 hover:text-white hover:border-slate-600 hover:bg-slate-900 transition-all cursor-pointer focus:outline-none active:scale-95 z-20"
       aria-label="Previous project"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 pointer-events-none">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2.5"
+        stroke="currentColor"
+        class="w-5 h-5 pointer-events-none"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15.75 19.5L8.25 12l7.5-7.5"></path>
       </svg>
     </button>
 
@@ -76,8 +90,18 @@ const projectItems = projects?.items.concat(projects?.items) || [];
       class="w-12 h-12 rounded-full border border-slate-800 bg-slate-900/60 flex items-center justify-center text-gray-400 hover:text-white hover:border-slate-600 hover:bg-slate-900 transition-all cursor-pointer focus:outline-none active:scale-95 z-20"
       aria-label="Next project"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 pointer-events-none">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2.5"
+        stroke="currentColor"
+        class="w-5 h-5 pointer-events-none"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
       </svg>
     </button>
   </div>
@@ -85,12 +109,12 @@ const projectItems = projects?.items.concat(projects?.items) || [];
 
 <script is:inline>
   function initializeAnimateCarousels() {
-    const containers = document.querySelectorAll('[data-carousel-container]');
-    
+    const containers = document.querySelectorAll("[data-carousel-container]");
+
     containers.forEach((container) => {
-      const track = container.querySelector('[data-carousel-track]');
-      const prevBtn = container.querySelector('[data-carousel-prev]');
-      const nextBtn = container.querySelector('[data-carousel-next]');
+      const track = container.querySelector("[data-carousel-track]");
+      const prevBtn = container.querySelector("[data-carousel-prev]");
+      const nextBtn = container.querySelector("[data-carousel-next]");
 
       if (!track || !prevBtn || !nextBtn) return;
 
@@ -110,7 +134,7 @@ const projectItems = projects?.items.concat(projects?.items) || [];
         function animate(currentTime) {
           if (!startTime) startTime = currentTime;
           const timeElapsed = currentTime - startTime;
-          
+
           // Quad easing curve for an organic decelerating motion profile
           const progress = Math.min(timeElapsed / duration, 1);
           const easeQuadOut = progress * (2 - progress);
@@ -138,8 +162,8 @@ const projectItems = projects?.items.concat(projects?.items) || [];
 
   // Handle immediate execution and Astro router events
   initializeAnimateCarousels();
-  document.addEventListener('astro:page-load', initializeAnimateCarousels);
-  document.addEventListener('astro:after-swap', initializeAnimateCarousels);
+  document.addEventListener("astro:page-load", initializeAnimateCarousels);
+  document.addEventListener("astro:after-swap", initializeAnimateCarousels);
 </script>
 
 <style>

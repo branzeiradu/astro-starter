@@ -5,11 +5,12 @@ import ClientsCarousel from '../components/ClientsCarousel.astro';
 import HeroBanner from '../components/HeroBanner.astro';
 import FeaturedProjects from '../components/FeaturedProjects.astro';
 
-const landingPage = await client.getLandingPage(true)
-
+const {preview = false} = Astro.props;
+console.log(`[Page] Landing Page is preview ${preview}`);
+const landingPage = await client.getLandingPage(preview)
+//console.log(`[Page] Landing Page ` + JSON.stringify(landingPage, null,2) );
 const projects = landingPage?.featuredProjectsCollection;
 const clients = landingPage?.ourClientsCollection;
-console.log(`Landing Page: ${ JSON.stringify(projects) }`)
 
 const dummyData = {
   title: "Architecting Digital Ecosystems",
@@ -31,7 +32,7 @@ const dummyData = {
 ---
 
 <Layout title="Astrobrary" includeFooter={true}>
-  <HeroBanner bannerData={dummyData}></HeroBanner>
+  <HeroBanner bannerData={dummyData} />
   <FeaturedProjects projects={projects} />
   <ClientsCarousel clients={clients} />
    <!-- </div> -->

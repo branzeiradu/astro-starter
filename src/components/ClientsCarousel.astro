@@ -10,11 +10,7 @@ interface Props {
 
 const { clients } = Astro.props;
 
-const items = clients.items;
-const hasFewItems = items.length <= 4;
-
-console.log(`Clients Carousel component: ${ JSON.stringify(clients) }`)
-const clientsCollection: OurClientsCollection = clients;
+//console.log(`Clients Carousel component: ${ JSON.stringify(clients) }`)
 
 const originalItems = clients.items || [];
 
@@ -22,7 +18,7 @@ const originalItems = clients.items || [];
 const isStaticGrid = originalItems.length <= 4;
 
 // 2. ONLY duplicate items if we actually need the scrolling marquee effect
-const loopableItems = !isStaticGrid ? originalItems : [...originalItems, ...originalItems, ...originalItems, ...originalItems];
+const loopableItems = !isStaticGrid ? originalItems : [...originalItems, ...originalItems,  ...originalItems, ...originalItems, ...originalItems];
 ---
 
 <div class="w-[calc(100vw-32px)] max-w-[1432px] mx-auto py-8 overflow-hidden select-none">
