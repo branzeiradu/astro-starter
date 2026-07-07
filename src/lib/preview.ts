@@ -20,27 +20,27 @@ const previewResolvers = {
             author: data,
         }),
     },
-    ourClientsCollection: {
-          fetch: (id, preview) => {
-            return client.getLandingPage(preview);
-        },
-        component: ClientsCarousel,
-        props: (data) => ({
-            clients: data?.ourClientsCollection,
-        }),
-    },
-    featuredProjectsCollection: {
-        fetch: (id, preview) => {
-            return client.getLandingPage(preview);
-        },
-        component: FeaturedProjects,
-        props: (data) => {
-            //console.log(JSON.stringify(data));
-            return {
-                projects: data?.featuredProjectsCollection
-            }
-        },
-    },
+    // ourClientsCollection: {
+    //       fetch: (id, preview) => {
+    //         return client.getLandingPage(preview);
+    //     },
+    //     component: ClientsCarousel,
+    //     props: (data) => ({
+    //         clients: data?.ourClientsCollection,
+    //     }),
+    // },
+    // featuredProjectsCollection: {
+    //     fetch: (id, preview) => {
+    //         return client.getLandingPage(preview);
+    //     },
+    //     component: FeaturedProjects,
+    //     props: (data) => {
+    //         //console.log(JSON.stringify(data));
+    //         return {
+    //             projects: data?.featuredProjectsCollection
+    //         }
+    //     },
+    // },
     landingPage: {
         fetch: (id, preview) => {
             return client.getLandingPage(preview);
@@ -59,6 +59,7 @@ export async function getPreviewContent(
     type: string | null,
     id: string | null
 ) {
+    console.log("getPreviewContent resolver registry " + JSON.stringify(previewResolvers))
     const resolver = previewResolvers[type as keyof typeof previewResolvers];
 
     if (!resolver) {

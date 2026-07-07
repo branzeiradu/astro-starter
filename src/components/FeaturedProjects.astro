@@ -5,7 +5,7 @@ import type {
 } from "../types/contentful.d.ts";
 
 const { projects } = Astro.props;
-console.log("FEATURED PROJECTS " + JSON.stringify(projects?.item))
+console.log("FEATURED PROJECTS " + JSON.stringify(projects?.items))
 const projectItems = projects?.items.concat(projects?.items) || [];
 ---
 
