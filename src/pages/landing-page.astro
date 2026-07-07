@@ -1,0 +1,38 @@
+---
+import { client } from "../lib/contentful";
+import Layout from "../layouts/Layout.astro";
+import ClientsCarousel from '../components/ClientsCarousel.astro';
+import HeroBanner from '../components/HeroBanner.astro';
+import FeaturedProjects from '../components/FeaturedProjects.astro';
+
+const landingPage = await client.getLandingPage(true)
+
+const projects = landingPage?.featuredProjectsCollection;
+const clients = landingPage?.ourClientsCollection;
+console.log(`Landing Page: ${ JSON.stringify(projects) }`)
+
+const dummyData = {
+  title: "Architecting Digital Ecosystems",
+  subtitle: "Explore our latest case studies and discover how we leverage modern web architectures to scale digital products globally.",
+  
+  // High-quality, abstract stock video that loops perfectly for a dynamic full-bleed look
+  mediaAsset: {
+    url: "https://videos.ctfassets.net/2tpy245vqbk3/3Ag1Y5mv5pEjhOBItO7rv6/4cc75ecbb7e60fb830f64d490466473c/gsl-landing-page-hero-cover.mp4",
+    contentType: "video/mp4"
+  },
+  
+  // Independent layout settings
+  titlePosition: "top-left",
+  titleJustification: "left",
+  
+  subtitlePosition: "bottom-right",
+  subtitleJustification: "right"
+};
+---
+
+<Layout title="Astrobrary" includeFooter={true}>
+  <HeroBanner bannerData={dummyData}></HeroBanner>
+  <FeaturedProjects projects={projects} />
+  <ClientsCarousel clients={clients} />
+   <!-- </div> -->
+</Layout> 

@@ -1,0 +1,103 @@
+---
+export interface HeroBannerProps {
+  title: string;
+  subtitle: string;
+  mediaAsset: {
+    url: string;
+    contentType: string;
+  };
+  titlePosition: string;
+  titleJustification: string;
+  subtitlePosition: string;
+  subtitleJustification: string;
+}
+
+interface Props {
+  bannerData: HeroBannerProps;
+}
+
+const { bannerData } = Astro.props;
+
+// Maps positions to absolute grid coordinates
+const positionMap: Record<string, string> = {
+  'top-left': 'top-12 left-6 md:left-12 justify-start items-start',
+  'top-center': 'top-12 left-1/2 -translate-x-1/2 justify-start items-center',
+  'top-right': 'top-12 right-6 md:right-12 justify-start items-end',
+  'center-left': 'top-1/2 -translate-y-1/2 left-6 md:left-12 justify-center items-start',
+  'center-center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 justify-center items-center',
+  'center-right': 'top-1/2 -translate-y-1/2 right-6 md:right-12 justify-center items-end',
+  'bottom-left': 'bottom-12 left-6 md:left-12 justify-end items-start',
+  'bottom-center': 'bottom-12 left-1/2 -translate-x-1/2 justify-end items-center',
+  'bottom-right': 'bottom-12 right-6 md:right-12 justify-end items-end',
+};
+
+const justificationMap: Record<string, string> = {
+  'left': 'text-left',
+  'center': 'text-center',
+  'right': 'text-right',
+};
+
+const titlePosClasses = positionMap[bannerData?.titlePosition] || 'top-12 left-6 md:left-12';
+const titleTextClasses = justificationMap[bannerData?.titleJustification] || 'text-left';
+
+const subtitlePosClasses = positionMap[bannerData?.subtitlePosition] || 'bottom-12 right-6 md:right-12';
+const subtitleTextClasses = justificationMap[bannerData?.subtitleJustification] || 'text-right';
+
+const isVideo = bannerData?.mediaAsset?.contentType?.startsWith('video/');
+---
+
+<section class="relative w-full h-[85vh] min-h-[550px] max-h-[900px] overflow-hidden bg-slate-950 select-none">
+  
+  <div class="absolute inset-0 w-full h-full z-0">
+    {isVideo ? (
+      <video
+        src={bannerData?.mediaAsset?.url}
+        autoplay
+        loop
+        muted
+        playsinline
+        class="w-full h-full object-cover"
+      />
+    ) : (
+      <img
+        src={bannerData?.mediaAsset?.url}
+        alt={bannerData?.title || 'Hero Background'}
+        class="w-full h-full object-cover"
+        loading="eager"
+      />
+    )}
+    <div class="absolute inset-0 bg-slate-950/30 z-10"></div>
+  </div>
+
+  <div class="absolute inset-0 z-20 w-full h-full max-w-[1432px] mx-auto pointer-events-none">
+    
+    {bannerData?.title && (
+      <div class:list={[
+        "absolute p-4 max-w-2xl flex flex-col pointer-events-auto",
+        titlePosClasses
+      ]}>
+        <h1 class:list={[
+          "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] leading-[1.1]",
+          titleTextClasses
+        ]}>
+          {bannerData.title}
+        </h1>
+      </div>
+    )}
+    
+    {bannerData?.subtitle && (
+      <div class:list={[
+        "absolute p-4 max-w-xl flex flex-col pointer-events-auto",
+        subtitlePosClasses
+      ]}>
+        <p class:list={[
+          "text-base sm:text-lg md:text-xl text-slate-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] leading-relaxed",
+          subtitleTextClasses
+        ]}>
+          {bannerData.subtitle}
+        </p>
+      </div>
+    )}
+
+  </div>
+</section>

@@ -1,6 +1,9 @@
 import { client } from "./contentful";
 import BookPage from "../components/BookPage.astro";
 import AuthorPage from "../components/AuthorPage.astro";
+import ClientsCarousel from "../components/ClientsCarousel.astro";
+import FeaturedProjects from "../components/FeaturedProjects.astro";
+import LandingPage from "./../pages/landing-page.astro";
 
 const previewResolvers = {
     bookReferencePage: {
@@ -17,6 +20,39 @@ const previewResolvers = {
             author: data,
         }),
     },
+    ourClientsCollection: {
+          fetch: (id, preview) => {
+            return client.getLandingPage(preview);
+        },
+        component: ClientsCarousel,
+        props: (data) => ({
+            clients: data?.ourClientsCollection,
+        }),
+    },
+    featuredProjectsCollection: {
+        fetch: (id, preview) => {
+            return client.getLandingPage(preview);
+        },
+        component: FeaturedProjects,
+        props: (data) => {
+            //console.log(JSON.stringify(data));
+            return {
+                projects: data?.featuredProjectsCollection
+            }
+        },
+    },
+    landingPageCollection: {
+        fetch: (id, preview) => {
+            return client.getLandingPage(preview);
+        },
+        component: LandingPage,
+        props: (data) => {
+            //console.log(JSON.stringify(data));
+            return {
+                projects: data
+            }
+        },
+    }
 };
 
 export async function getPreviewContent(

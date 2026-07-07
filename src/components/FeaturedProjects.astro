@@ -1,0 +1,153 @@
+---
+import type {
+    ProjectsNewsBlogPost,
+    FeaturedProjectsCollection,
+} from "../types/contentful.d.ts";
+
+const { projects } = Astro.props;
+console.log("FEATURED PROJECTS " + JSON.stringify(projects?.item))
+const projectItems = projects?.items.concat(projects?.items) || [];
+---
+
+<div data-carousel-container class="w-full max-w-[1432px] mx-auto py-8 flex flex-col select-none px-4">
+  
+  <div class="w-full h-16 flex items-center justify-start mb-6">
+    <h2 class="text-xl font-bold tracking-wide text-white">Featured Projects</h2>
+  </div>
+
+  <div class="w-full overflow-hidden relative">
+    
+    <div 
+      data-carousel-track
+      class="w-full overflow-x-auto scrollbar-hide block"
+    >
+      <div class="flex flex-nowrap gap-[12px] w-max pb-2">
+        {
+          projectItems.map((project: ProjectsNewsBlogPost) => (
+            <div
+              class="h-[420px] flex-shrink-0 flex flex-col items-start bg-slate-900/40 border border-slate-800 rounded-lg p-6 gap-[12px] transition-colors duration-200 hover:border-slate-700 opacity-100 group
+                     w-[calc(100vw-48px)] sm:w-[340px] md:w-[400px] lg:w-[calc((1432px-32px-24px)/3)]"
+            >
+              <div class="w-full h-44 bg-slate-950 rounded-md overflow-hidden flex items-center justify-center p-4 relative">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 group-hover:scale-105 transition-transform duration-300"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-12 h-12 text-slate-700 relative z-10">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                </svg>
+              </div>
+
+              {project.dateDisplayed && (
+                <span class="text-xs font-semibold text-indigo-400 tracking-wider uppercase">
+                  {new Date(project.dateDisplayed).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </span>
+              )}
+
+              <h3 class="text-lg font-bold text-white tracking-wide line-clamp-1">
+                {project.postTitle || 'Untitled Project'}
+              </h3>
+
+              <p class="text-sm text-gray-400 line-clamp-3 leading-relaxed text-left">
+                {project.postIntroduction || 'No project introduction overview available.'}
+              </p>
+            </div> 
+          ))
+        }
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="w-full flex justify-end items-center mt-6 px-2 gap-3">
+    <button
+      data-carousel-prev
+      class="w-12 h-12 rounded-full border border-slate-800 bg-slate-900/60 flex items-center justify-center text-gray-400 hover:text-white hover:border-slate-600 hover:bg-slate-900 transition-all cursor-pointer focus:outline-none active:scale-95 z-20"
+      aria-label="Previous project"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 pointer-events-none">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+    </button>
+
+    <button
+      data-carousel-next
+      class="w-12 h-12 rounded-full border border-slate-800 bg-slate-900/60 flex items-center justify-center text-gray-400 hover:text-white hover:border-slate-600 hover:bg-slate-900 transition-all cursor-pointer focus:outline-none active:scale-95 z-20"
+      aria-label="Next project"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 pointer-events-none">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+  function initializeAnimateCarousels() {
+    const containers = document.querySelectorAll('[data-carousel-container]');
+    
+    containers.forEach((container) => {
+      const track = container.querySelector('[data-carousel-track]');
+      const prevBtn = container.querySelector('[data-carousel-prev]');
+      const nextBtn = container.querySelector('[data-carousel-next]');
+
+      if (!track || !prevBtn || !nextBtn) return;
+
+      const getScrollStep = () => {
+        const innerWrapper = track.firstElementChild;
+        const firstItem = innerWrapper ? innerWrapper.firstElementChild : null;
+        if (!firstItem) return 400;
+        return firstItem.getBoundingClientRect().width + 12;
+      };
+
+      // Custom smooth scrolling easing function loop
+      function smoothScrollTo(element, target, duration) {
+        const start = element.scrollLeft;
+        const change = target - start;
+        let startTime = null;
+
+        function animate(currentTime) {
+          if (!startTime) startTime = currentTime;
+          const timeElapsed = currentTime - startTime;
+          
+          // Quad easing curve for an organic decelerating motion profile
+          const progress = Math.min(timeElapsed / duration, 1);
+          const easeQuadOut = progress * (2 - progress);
+
+          element.scrollLeft = start + change * easeQuadOut;
+
+          if (timeElapsed < duration) {
+            requestAnimationFrame(animate);
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+
+      nextBtn.onclick = () => {
+        const target = track.scrollLeft + getScrollStep();
+        smoothScrollTo(track, target, 350); // 350ms duration
+      };
+
+      prevBtn.onclick = () => {
+        const target = track.scrollLeft - getScrollStep();
+        smoothScrollTo(track, target, 350);
+      };
+    });
+  }
+
+  // Handle immediate execution and Astro router events
+  initializeAnimateCarousels();
+  document.addEventListener('astro:page-load', initializeAnimateCarousels);
+  document.addEventListener('astro:after-swap', initializeAnimateCarousels);
+</script>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

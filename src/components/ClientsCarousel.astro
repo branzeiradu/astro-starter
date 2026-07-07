@@ -1,0 +1,90 @@
+---
+import type {
+  ClientModel,
+  OurClientsCollection,
+} from "../types/contentful.d.ts";
+
+interface Props {
+  clients: OurClientsCollection;
+}
+
+const { clients } = Astro.props;
+
+const items = clients.items;
+const hasFewItems = items.length <= 4;
+
+console.log(`Clients Carousel component: ${ JSON.stringify(clients) }`)
+const clientsCollection: OurClientsCollection = clients;
+
+const originalItems = clients.items || [];
+
+// 1. Check the true count from Contentful first
+const isStaticGrid = originalItems.length <= 4;
+
+// 2. ONLY duplicate items if we actually need the scrolling marquee effect
+const loopableItems = !isStaticGrid ? originalItems : [...originalItems, ...originalItems, ...originalItems, ...originalItems];
+---
+
+<div class="w-[calc(100vw-32px)] max-w-[1432px] mx-auto py-8 overflow-hidden select-none">
+  
+  <div class="w-full h-16 flex items-center justify-center mb-6">
+    <h2 class="text-xl font-bold tracking-wide text-white">Our clients</h2>
+  </div>
+
+  <div class="w-full overflow-hidden relative">
+    
+    <div 
+      class:list={[
+        "gap-[10px]",
+        !isStaticGrid 
+          ? "grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] w-full" 
+          : "flex flex-nowrap w-max animate-marquee"
+      ]}
+    >
+      {
+        loopableItems.map((client: ClientModel) => (
+          <a
+            href={client.clientExternalLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class:list={[
+              "h-[120px] flex items-center justify-center bg-slate-900/40 border border-slate-800 rounded-lg p-6 focus:outline-none transition-transform duration-200 hover:border-slate-700",
+              !isStaticGrid ? "w-full" : "w-[280px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
+            ]}
+            title={`Visit ${client.clientName}`}
+          >
+            <img
+              src={client?.clientLogo?.url}
+              alt={client?.clientName}
+              class="w-full h-full object-contain opacity-80 hover:opacity-100 transition-opacity"
+              loading="lazy"
+            />
+          </a>
+        ))
+      }
+    </div>
+    
+  </div>
+</div>
+
+<style>
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+     transform: translateX(calc(-50% - 5px)); 
+    }
+  }
+
+  @utility animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+
+  /* Force the scroll animation to execute regardless of hardware/browser media settings */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee {
+      animation: marquee 25s linear infinite !important;
+    }
+  }
+</style>
