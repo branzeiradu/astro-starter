@@ -1,6 +1,6 @@
 const SPACE = import.meta.env.CONTENTFUL_SPACE_ID
 const DELIVERY_TOKEN = import.meta.env.CONTENTFUL_ACCESS_TOKEN
-const PREVIEW_TOKEN = import.meta.env.CONTENTFUL_PREVIEW_TOKEN
+const PREVIEW_TOKEN = import.meta.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
 const API_URL = `https://graphql.contentful.com/content/v1/spaces/${SPACE}/environments/master`;
 
 async function apiCall(query, variables, preview = false) {
