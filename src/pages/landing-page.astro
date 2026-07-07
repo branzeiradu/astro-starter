@@ -1,33 +1,35 @@
 ---
 import { client } from "../lib/contentful";
 import Layout from "../layouts/Layout.astro";
-import ClientsCarousel from '../components/ClientsCarousel.astro';
-import HeroBanner from '../components/HeroBanner.astro';
-import FeaturedProjects from '../components/FeaturedProjects.astro';
+import ClientsCarousel from "../components/ClientsCarousel.astro";
+import HeroBanner from "../components/HeroBanner.astro";
+import FeaturedProjects from "../components/FeaturedProjects.astro";
 
-const {preview = false} = Astro.props;
+const { preview = false } = Astro.props;
 console.log(`[Page] Landing Page is preview ${preview}`);
-const landingPage = await client.getLandingPage(preview)
+const landingPage = await client.getLandingPage(preview);
+console.log(JSON.stringify(landingPage, null, 2))
+const { heroTitle, heroSubTitle, heroCover, titlePosition, subTitlePosition } = landingPage;
 //console.log(`[Page] Landing Page ` + JSON.stringify(landingPage, null,2) );
 const projects = landingPage?.featuredProjectsCollection;
 const clients = landingPage?.ourClientsCollection;
 
 const dummyData = {
-  title: "Architecting Digital Ecosystems",
-  subtitle: "Explore our latest case studies and discover how we leverage modern web architectures to scale digital products globally.",
-  
+  title: heroTitle ?? "",
+  subtitle:
+    heroSubTitle ?? "",
+
   // High-quality, abstract stock video that loops perfectly for a dynamic full-bleed look
   mediaAsset: {
-    url: "https://videos.ctfassets.net/2tpy245vqbk3/3Ag1Y5mv5pEjhOBItO7rv6/4cc75ecbb7e60fb830f64d490466473c/gsl-landing-page-hero-cover.mp4",
-    contentType: "video/mp4"
+    url:
+      heroCover?.url ??
+      "https://videos.ctfassets.net/2tpy245vqbk3/3Ag1Y5mv5pEjhOBItO7rv6/4cc75ecbb7e60fb830f64d490466473c/gsl-landing-page-hero-cover.mp4",
+    contentType: heroCover?.contentType ?? "video/mp4",
   },
-  
+
   // Independent layout settings
-  titlePosition: "top-left",
-  titleJustification: "left",
-  
-  subtitlePosition: "bottom-right",
-  subtitleJustification: "right"
+  titlePosition,
+  subTitlePosition,
 };
 ---
 
@@ -35,5 +37,5 @@ const dummyData = {
   <HeroBanner bannerData={dummyData} />
   <FeaturedProjects projects={projects} />
   <ClientsCarousel clients={clients} />
-   <!-- </div> -->
-</Layout> 
+  <!-- </div> -->
+</Layout>

@@ -169,6 +169,8 @@ async function getLandingPage(preview = false) {
           items {
               heroTitle
               heroSubTitle
+              subTitlePosition
+              titlePosition
               heroCover {
                   sys { id }
                   ... on Asset {

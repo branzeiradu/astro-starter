@@ -7,9 +7,7 @@ export interface HeroBannerProps {
     contentType: string;
   };
   titlePosition: string;
-  titleJustification: string;
-  subtitlePosition: string;
-  subtitleJustification: string;
+  subTitlePosition: string;
 }
 
 interface Props {
@@ -18,85 +16,79 @@ interface Props {
 
 const { bannerData } = Astro.props;
 
-// Maps positions to absolute grid coordinates
-const positionMap: Record<string, string> = {
-  'top-left': 'top-12 left-6 md:left-12 justify-start items-start',
-  'top-center': 'top-12 left-1/2 -translate-x-1/2 justify-start items-center',
-  'top-right': 'top-12 right-6 md:right-12 justify-start items-end',
-  'center-left': 'top-1/2 -translate-y-1/2 left-6 md:left-12 justify-center items-start',
-  'center-center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 justify-center items-center',
-  'center-right': 'top-1/2 -translate-y-1/2 right-6 md:right-12 justify-center items-end',
-  'bottom-left': 'bottom-12 left-6 md:left-12 justify-end items-start',
-  'bottom-center': 'bottom-12 left-1/2 -translate-x-1/2 justify-end items-center',
-  'bottom-right': 'bottom-12 right-6 md:right-12 justify-end items-end',
+
+// 1. Destructure with safe, component-level default fallbacks
+const {
+  title = bannerData.title,
+  subtitle = bannerData.title,
+  mediaAsset,
+  titlePosition = bannerData.titlePosition,
+  subTitlePosition = bannerData.subTitlePosition,
+} = bannerData || {} as HeroBannerProps;
+
+
+// THE FIX: We bundle Box Placement, Flex Alignment, and Text Justification 
+// into a single cohesive rule. They will never fight or cancel each other out again.
+const layoutMap: Record<string, string> = {
+  'top-left': 'row-start-1 justify-self-start self-start text-left items-start',
+  'top-center': 'row-start-1 justify-self-center self-start text-center items-center',
+  'top-right': 'row-start-1 justify-self-end self-start text-right items-end',
+  
+  'center-left': 'row-start-2 justify-self-start self-center text-left items-start',
+  'center-center': 'row-start-2 justify-self-center self-center text-center items-center',
+  'center-right': 'row-start-2 justify-self-end self-center text-right items-end',
+  
+  'bottom-left': 'row-start-3 justify-self-start self-end text-left items-start',
+  'bottom-center': 'row-start-3 justify-self-center self-end text-center items-center',
+  'bottom-right': 'row-start-3 justify-self-end self-end text-right items-end',
 };
 
-const justificationMap: Record<string, string> = {
-  'left': 'text-left',
-  'center': 'text-center',
-  'right': 'text-right',
-};
+const titleClasses = layoutMap[titlePosition] || layoutMap['top-left'];
+const subtitleClasses = layoutMap[subTitlePosition] || layoutMap['bottom-right'];
 
-const titlePosClasses = positionMap[bannerData?.titlePosition] || 'top-12 left-6 md:left-12';
-const titleTextClasses = justificationMap[bannerData?.titleJustification] || 'text-left';
+const isVideo = mediaAsset?.contentType?.startsWith('video/');
 
-const subtitlePosClasses = positionMap[bannerData?.subtitlePosition] || 'bottom-12 right-6 md:right-12';
-const subtitleTextClasses = justificationMap[bannerData?.subtitleJustification] || 'text-right';
+console.log("Title Position: " + titlePosition);
+console.log("Sub Title Position: " + subTitlePosition);
 
-const isVideo = bannerData?.mediaAsset?.contentType?.startsWith('video/');
+const positionsMatch = titlePosition === subTitlePosition;
 ---
 
 <section class="relative w-full h-[85vh] min-h-[550px] max-h-[900px] overflow-hidden bg-slate-950 select-none">
   
   <div class="absolute inset-0 w-full h-full z-0">
     {isVideo ? (
-      <video
-        src={bannerData?.mediaAsset?.url}
-        autoplay
-        loop
-        muted
-        playsinline
-        class="w-full h-full object-cover"
-      />
+      <video src={mediaAsset?.url} autoplay loop muted playsinline class="w-full h-full object-cover" />
     ) : (
-      <img
-        src={bannerData?.mediaAsset?.url}
-        alt={bannerData?.title || 'Hero Background'}
-        class="w-full h-full object-cover"
-        loading="eager"
-      />
+      <img src={mediaAsset?.url} alt={title || 'Hero Background'} class="w-full h-full object-cover" loading="eager" />
     )}
     <div class="absolute inset-0 bg-slate-950/30 z-10"></div>
   </div>
 
-  <div class="absolute inset-0 z-20 w-full h-full max-w-[1432px] mx-auto pointer-events-none">
+  <div class="absolute inset-0 z-20 w-full h-full max-w-[1432px] mx-auto p-8 md:p-16 grid grid-cols-1 grid-rows-3 gap-4 pointer-events-none">
     
-    {bannerData?.title && (
+    {positionsMatch ? (
       <div class:list={[
-        "absolute p-4 max-w-2xl flex flex-col pointer-events-auto",
-        titlePosClasses
+        "max-w-full flex flex-col gap-4 pointer-events-auto",
+        titleClasses // Controls the container alignment and text alignment of both simultaneously
       ]}>
-        <h1 class:list={[
-          "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] leading-[1.1]",
-          titleTextClasses
-        ]}>
-          {bannerData.title}
-        </h1>
+        {title && <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] leading-[1.1]">{title}</h1>}
+        {subtitle && <p class="text-base sm:text-lg md:text-xl text-slate-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] leading-snug">{subtitle}</p>}
       </div>
-    )}
-    
-    {bannerData?.subtitle && (
-      <div class:list={[
-        "absolute p-4 max-w-xl flex flex-col pointer-events-auto",
-        subtitlePosClasses
-      ]}>
-        <p class:list={[
-          "text-base sm:text-lg md:text-xl text-slate-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] leading-relaxed",
-          subtitleTextClasses
-        ]}>
-          {bannerData.subtitle}
-        </p>
-      </div>
+    ) : (
+      <>
+        {title && (
+          <div class:list={["max-w-full flex flex-col pointer-events-auto", titleClasses]}>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] leading-[1.1]">{title}</h1>
+          </div>
+        )}
+        
+        {subtitle && (
+          <div class:list={["max-w-full flex flex-col pointer-events-auto", subtitleClasses]}>
+            <p class="text-base sm:text-lg md:text-xl text-slate-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] leading-snug">{subtitle}</p>
+          </div>
+        )}
+      </>
     )}
 
   </div>
