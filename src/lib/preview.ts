@@ -41,7 +41,7 @@ const previewResolvers = {
             }
         },
     },
-    landingPageCollection: {
+    landingPage: {
         fetch: (id, preview) => {
             return client.getLandingPage(preview);
         },
